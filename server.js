@@ -5,24 +5,19 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-// const jwt = require('jsonwebtoken');
-// const jwksClient = require('jwks-rsa');
+
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+
 const PORT = process.env.PORT;
 
 mongoose.connect('mongodb://localhost:27017/books',
-  { useNewUrlParser: true, useUnifiedTopology: true }); //deprecation warnings
+  { useNewUrlParser: true, useUnifiedTopology: true });
 
 
-
-
-//  create collections
-//  create schema and model
-// Schema: determines how the shape of our data will look like (blueprint)
 const bookSchema = new mongoose.Schema({
   bookName: String,
   description: String,
@@ -34,46 +29,83 @@ const ownerSchema = new mongoose.Schema({
   books: [bookSchema]
 })
 
-// build a model from our schema
-// schema: drawing phase
-// model: creation phase
+
 const bookModel = mongoose.model('book', bookSchema);
-const myOwnerModel = mongoose.model('owner', ownerSchema);
+const ownerModel = mongoose.model('owner', ownerSchema);
 
+function seedBookCollection() {
+  const HarryPotter = new bookModel({
+    bookName: 'Harry Potter and the Goblet of Fire',
+    description: 'A generation grew up on Rowling’s all-conquering magical fantasies, but countless adults have also been enthralled by her immersive world. Book four, the first of the doorstoppers, marks the point where the series really takes off. The Triwizard Tournament provides pace and tension, and Rowling makes her boy wizard look death in the eye for the first time.',
+    urlImg: 'https://i5.walmartimages.com/asr/810803e8-a900-48da-9f51-0163df609898_1.8b89af58642b89f54d225ef6ff2cb43a.jpeg?odnWidth=612&odnHeight=612&odnBg=ffffff'
+  });
+  const Half = new bookModel({
+    bookName: 'Half of a Yellow Sun',
+    description: 'When Nigerian author Adichie was growing up, the Biafran war “hovered over everything”. Her sweeping, evocative novel, which won the Orange prize, charts the political and personal struggles of those caught up in the conflict and explores the brutal legacy of colonialism in Africa.',
+    urlImg: 'https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1327934717l/18749.jpg'
+  });
 
+  HarryPotter.save();
+  Half.save();
+}
+// seedBookCollection();
 
 function seedOwnerCollection() {
-  const zienab = new myOwnerModel({
+  const zienab = new ownerModel({
     ownerEmail: 'yahyazainab204@gmail.com',
     books: [
       {
-        bookName: 'Light',
-        description: 'One of the most underrated prose writers demonstrates the literary firepower of science fiction at its best. Three narrative strands – spanning far-future space opera, contemporary unease and virtual-reality pastiche – are braided together for a breathtaking metaphysical voyage in pursuit of the mystery at the heart of reality.',
-        urlImg: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJwwPWh_fnncXcnbYePfsLUTXEPpcVH8i0_A&usqp=CAU'
+        bookName: 'Harry Potter and the Goblet of Fire',
+        description: 'A generation grew up on Rowling’s all-conquering magical fantasies, but countless adults have also been enthralled by her immersive world. Book four, the first of the doorstoppers, marks the point where the series really takes off. The Triwizard Tournament provides pace and tension, and Rowling makes her boy wizard look death in the eye for the first time.',
+        urlImg: 'https://i5.walmartimages.com/asr/810803e8-a900-48da-9f51-0163df609898_1.8b89af58642b89f54d225ef6ff2cb43a.jpeg?odnWidth=612&odnHeight=612&odnBg=ffffff'
       },
       {
-        bookName: 'Light1',
-        description: '1One of the most underrated prose writers demonstrates the literary firepower of science fiction at its best. Three narrative strands – spanning far-future space opera, contemporary unease and virtual-reality pastiche – are braided together for a breathtaking metaphysical voyage in pursuit of the mystery at the heart of reality.',
-        urlImg: '2https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJwwPWh_fnncXcnbYePfsLUTXEPpcVH8i0_A&usqp=CAU'
+        bookName: 'Half of a Yellow Sun',
+        description: 'When Nigerian author Adichie was growing up, the Biafran war “hovered over everything”. Her sweeping, evocative novel, which won the Orange prize, charts the political and personal struggles of those caught up in the conflict and explores the brutal legacy of colonialism in Africa.',
+        urlImg: 'https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1327934717l/18749.jpg'
       }
     ]
   })
 
+  const motasim = new ownerModel({
+    ownerEmail: 'motasim.alazzam5@gmail.com',
+    books: [
+      {
+        bookName: 'Harry Potter and the Goblet of Fire',
+        description: 'A generation grew up on Rowling’s all-conquering magical fantasies, but countless adults have also been enthralled by her immersive world. Book four, the first of the doorstoppers, marks the point where the series really takes off. The Triwizard Tournament provides pace and tension, and Rowling makes her boy wizard look death in the eye for the first time.',
+        urlImg: 'https://i5.walmartimages.com/asr/810803e8-a900-48da-9f51-0163df609898_1.8b89af58642b89f54d225ef6ff2cb43a.jpeg?odnWidth=612&odnHeight=612&odnBg=ffffff'
+      },
+      {
+        bookName: 'Half of a Yellow Sun',
+        description: 'When Nigerian author Adichie was growing up, the Biafran war “hovered over everything”. Her sweeping, evocative novel, which won the Orange prize, charts the political and personal struggles of those caught up in the conflict and explores the brutal legacy of colonialism in Africa.',
+        urlImg: 'https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1327934717l/18749.jpg'
+      }
+    ]
+  })
+
+
   zienab.save();
+  motasim.save();
 }
 
 
-//  seedOwnerCollection();
+// seedOwnerCollection();
 
-//http://localhost:3050/books?email=yahyazainab204@gmail.com
+app.get('/', homePageHandler);
 app.get('/books', getBooksHandler);
-app.post('/addBooks', addBooksHandler);
-app.delete('/deleteBooks/:index', deleteBooksHandler);
+app.post('/addBook', addBooksHandler);
+app.delete('/deleteBook/:index',deleteBooksHandler);
+
+function homePageHandler(req, res) {
+  res.send('Hello from the homePage')
+}
+
+//http://localhost:3001/books?email=yahyazainab204@gmail.com
 
 function getBooksHandler(req, res) {
   let { email } = req.query;
   // let {name} = req.query
-  myOwnerModel.find({ ownerEmail: email }, function (err, ownerData) {
+  ownerModel.find({ ownerEmail: email }, function (err, ownerData) {
     if (err) {
       console.log('did not work')
     } else {
@@ -87,21 +119,15 @@ function getBooksHandler(req, res) {
 
 
 
-// app.get('/test', (request, response) => {
-
-
-
-// })
-
 
 function addBooksHandler(req, res) {
   console.log(req.body);
-  const { bookName, description, urlImg, ownerEmail } = req.body;
+  const {bookName,description, urlImg, ownerEmail } = req.body;
   // console.log(bookName);
   // console.log(bookDescription);
   // console.log(bookUrlImg);
 
-  myOwnerModel.find({ ownerEmail: ownerEmail }, (error, ownerData) => {
+  ownerModel.find({ ownerEmail:ownerEmail }, (error, ownerData) => {
     if (error) { res.send('not working') }
     else {
       console.log('before pushing', ownerData[0])
@@ -122,13 +148,41 @@ function addBooksHandler(req, res) {
 }
 
 
-//localhost:3001/deletebook/:2?name=razan
+
+// function addBooksHandler(req,res) {
+//   console.log(req.body);
+//   const {bookName,description, urlImg, ownerEmail} = req.body;
+//   // console.log(catName);
+//   // console.log(catBreed);
+//   // console.log(ownerName);
+
+//   ownerModel.find({ownerEmail:ownerEmail},(error,ownerData)=>{
+//       if(error) {res.send('not working')}
+//       else {
+//           console.log('before pushing',ownerData);
+//           ownerData[0].books.push({
+//             bookName: bookName,
+//             description: description,
+//             urlImg: urlImg,
+//           })
+//           console.log('after pushing',ownerData[0])
+//           ownerData[0].save();
+
+//           res.send(ownerData[0].books);
+
+//       }
+
+//   })    
+// }
+
+
+// //localhost:3001/deletebook/:2?name=razan
 function deleteBooksHandler(req, res) {
   console.log(req.params);
   let { email } = req.query;
   const index = Number(req.params.index);
 
-  myOwnerModel.find({ ownerName: email }, (error, ownerData) => {
+  ownerModel.find({ ownerName: email }, (error, ownerData) => {
     // filter the books for the owner and remove the one that matches the index
     const newBooksArr = ownerData[0].books.filter((book, idx) => {
       if (idx !== index) return book;
@@ -141,5 +195,6 @@ function deleteBooksHandler(req, res) {
 
 }
 
-
-app.listen(PORT, () => console.log(`listening on ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Listening on PORT ${PORT}`)
+})
