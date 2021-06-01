@@ -130,7 +130,7 @@ function addBooksHandler(req, res) {
   ownerModel.find({ ownerEmail:ownerEmail }, (error, ownerData) => {
     if (error) { res.send('not working') }
     else {
-      console.log('before pushing', ownerData[0])
+      console.log('before pushing', ownerData[0]);
       ownerData[0].books.push({
         bookName: bookName,
         description: description,
