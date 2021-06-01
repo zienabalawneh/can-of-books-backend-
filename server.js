@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const PORT = process.env.PORT;
 
@@ -66,7 +67,8 @@ function seedOwnerCollection() {
 
 //http://localhost:3050/books?email=yahyazainab204@gmail.com
 app.get('/books', getBooksHandler);
-
+app.post('/addBooks', addBooksHandler);
+app.delete('/deleteBooks/:index', deleteBooksHandler);
 
 function getBooksHandler(req, res) {
   let { email } = req.query;
@@ -90,5 +92,54 @@ function getBooksHandler(req, res) {
 
 
 // })
+
+
+function addBooksHandler(req, res) {
+  console.log(req.body);
+  const { bookName, description, urlImg, ownerEmail } = req.body;
+  // console.log(bookName);
+  // console.log(bookDescription);
+  // console.log(bookUrlImg);
+
+  myOwnerModel.find({ ownerEmail: ownerEmail }, (error, ownerData) => {
+    if (error) { res.send('not working') }
+    else {
+      console.log('before pushing', ownerData[0])
+      ownerData[0].books.push({
+        bookName: bookName,
+        description: description,
+        urlImg: urlImg,
+
+      })
+      console.log('after pushing', ownerData[0])
+      ownerData[0].save();
+
+      res.send(ownerData[0].books);
+
+    }
+
+  })
+}
+
+
+//localhost:3001/deletebook/:2?name=razan
+function deleteBooksHandler(req, res) {
+  console.log(req.params);
+  let { email } = req.query;
+  const index = Number(req.params.index);
+
+  myOwnerModel.find({ ownerName: email }, (error, ownerData) => {
+    // filter the books for the owner and remove the one that matches the index
+    const newBooksArr = ownerData[0].books.filter((book, idx) => {
+      if (idx !== index) return book;
+      // return idx !==index
+    })
+    ownerData[0].books = newBooksArr;
+    ownerData[0].save();
+    res.send(ownerData[0].books)
+  })
+
+}
+
 
 app.listen(PORT, () => console.log(`listening on ${PORT}`));
