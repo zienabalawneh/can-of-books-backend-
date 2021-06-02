@@ -102,7 +102,7 @@ app.get('/', homePageHandler);
 app.get('/books', getBooksHandler);
 app.post('/addBook', addBooksHandler);
 app.delete('/deleteBook/:index', deleteBooksHandler);
-app.put('/updatebook/:index',updateBookHandler);
+app.put('/updatebook/:index', updateBookHandler);
 
 function homePageHandler(req, res) {
   res.send('Hello from the homePage')
@@ -178,7 +178,7 @@ function deleteBooksHandler(req, res) {
 }
 
 
-function  updateBookHandler(req,res) {
+function updateBookHandler(req, res) {
 
   console.log(req.body);
   console.log(req.params.index);
@@ -186,17 +186,17 @@ function  updateBookHandler(req,res) {
   const { bookName, description, urlImg, ownerEmail } = req.body;
   const index = Number(req.params.index);
 
-  ownerModel.findOne({ownerEmail:ownerEmail},(error,ownerData)=>{
-      console.log(ownerData);
-      ownerData.books.splice(index,1,{
-        bookName: bookName,
-        description: description,
-        urlImg: urlImg,
-      })
+  ownerModel.findOne({ ownerEmail: ownerEmail }, (error, ownerData) => {
+    console.log(ownerData);
+    ownerData.books.splice(index, 1, {
+      bookName: bookName,
+      description: description,
+      urlImg: urlImg,
+    })
 
-      ownerData.save();
-      console.log(ownerData)
-      res.send(ownerData.books)
+    ownerData.save();
+    console.log(ownerData)
+    res.send(ownerData.books)
   })
 
 }
