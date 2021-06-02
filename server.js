@@ -178,12 +178,11 @@ function deleteBooksHandler(req, res) {
 }
 
 
-
 function  updateBookHandler(req,res) {
 
   console.log(req.body);
   console.log(req.params.index);
-  
+
   const { bookName, description, urlImg, ownerEmail } = req.body;
   const index = Number(req.params.index);
 
